@@ -4,12 +4,8 @@ import { jobsLogger } from './index'
 import client from '../instance'
 import { guildModuleService, memberService, userService } from '@/database/services'
 
-import { levelUpCard } from '@/ui/assets/cards/levelUpCard'
-
-import { applicationEmojiHelper, guildMemberHelperSync } from '@/helpers'
-import { getDominantColor, levelToXp, randomNumber, timeElapsedFactor, xpToLevel } from '@/utils'
+import { randomNumber, timeElapsedFactor } from '@/utils'
 import { channelBlacklistService } from '@/database/services/channel-blacklist'
-import { handleMemberRoleRewardSync } from '../handlers/member-role-reward-sync'
 import { handleMemberCheckLevelUp } from '../handlers/member-check-level-up'
 
 jobsLogger.borderBox('🔗 » Tick Job started');
@@ -36,13 +32,11 @@ cron.schedule('* * * * *', async () => {
 
             const [
                 userDatabase,
-                memberDatabase,
                 guildEcoModule,
                 guildLevelModule,
                 channelScopeBlacklist
             ] = await Promise.all([
                 userService.findById(userId),
-                memberService.findById({ guildId, userId }),
                 guildModuleService.findById({ guildId, moduleName: 'eco' }),
                 guildModuleService.findById({ guildId, moduleName: 'level' }),
                 channelBlacklistService.findMany({ guildId, channelId: session.channelId })

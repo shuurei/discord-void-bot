@@ -94,9 +94,13 @@ export default new Event({
 
         if (this.client.mainGuild?.id === guildId) {
             if (process.env.ENV === 'PROD' && channelsAutomaticThread.includes(message.channel.id)) {
-                return await message.startThread({
-                    name: `Discussion avec ${message.author.username}`,
-                });
+                if (message.attachments.size > 0) {
+                    return await message.startThread({
+                        name: `Discussion avec ${message.author.username}`,
+                    });
+                } else {
+                    return await message.delete();
+                }
             }
         };
 
