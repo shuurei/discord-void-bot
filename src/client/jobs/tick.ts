@@ -139,6 +139,7 @@ cron.schedule('* * * * *', async () => {
                     });
 
                     await handleMemberDailyQuestNotify({
+                        userId,
                         channel: guild.channels.cache.get(session.channelId),
                         oldQuest: quest,
                         newQuest
