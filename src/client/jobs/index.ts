@@ -7,6 +7,7 @@ export const jobsLogger = logger.use({
 export const startAllJobs = async () => {
     logger.topBorderBox('jobs Loading ⏳');
     await import('./tick.js');
+    await import('./weekly.js');
     logger.bottomBorderBox('✅ Jobs loaded');
 
     console.log();
