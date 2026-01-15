@@ -36,6 +36,9 @@ export const defaultEcoGuildModuleSettings = {
     // Shop
     isShopEnabled: false,
 
+    // Gambling
+    isGamblingEnabled: true,
+
     // Discount
     tagRolePriceDiscount: 0.15,
     tagUpgradeDiscount: 0.15,

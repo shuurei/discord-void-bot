@@ -34,6 +34,8 @@ export interface CustomClientMainGuildData {
 interface CustomClientSpamBufferData {
     guildId: string;
     lastMessageAt: number;
+    lastInterval?: number;
+    lastContent?: string;
     messageCount: number;
 }
 

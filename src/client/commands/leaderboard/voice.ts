@@ -49,7 +49,7 @@ const buildEmbed = async (member: GuildMember) => {
             const memberHelper = guildMemberHelperSync(memberObj);
             const place = medals[i] ?? `**${i + 1}**`;
             const isAuthor = r.userId === userId;
-            const name = memberHelper.getName({ safe: true })
+            const name = memberHelper.getName()
 
             return `- ${place} ${isAuthor ? `**\`${name}\`**` : `\`${name}\``} ${whiteArrowEmoji} **${r.voiceTotalMinutes.toLocaleString('en')}** minutes en vocal`;
         }).join('\n');
@@ -70,7 +70,7 @@ const buildEmbed = async (member: GuildMember) => {
             `> 🔊 **${totalVocalMinutes.toLocaleString('en')}** minutes de vocal cumulé sur le serveur`,
             topMembersMap.size < 10 ? `***TOP ${topMembersMap.size}***` : `***TOP 10 sur ${rankers.length.toLocaleString('en')} membres***`,
             top,
-            leaderboardIndex >= 10 ? `- **..${leaderboardIndex + 1}** **\`${memberHelper.getName({ safe: true })}\`** ${whiteArrowEmoji} **${rankers[leaderboardIndex].voiceTotalMinutes.toLocaleString('en')}** minutes en vocal` : ''
+            leaderboardIndex >= 10 ? `- **..${leaderboardIndex + 1}** **\`${memberHelper.getName()}\`** ${whiteArrowEmoji} **${rankers[leaderboardIndex].voiceTotalMinutes.toLocaleString('en')}** minutes en vocal` : ''
         ].join('\n'),
         timestamp: Date.now()
     });

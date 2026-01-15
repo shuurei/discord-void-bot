@@ -60,7 +60,7 @@ const buildEmbed = async (member: GuildMember) => {
             const helper = guildMemberHelperSync(memberObj)
             const place = medals[i] ?? `**${i + 1}**`
             const isAuthor = r.userId === userId
-            const name = helper.getName({ safe: true })
+            const name = helper.getName();
 
             return `- ${place} ${isAuthor ? `**\`${name}\`**` : `\`${name}\``} ${whiteArrowEmoji} **${r.totalCoins.toLocaleString('en')}** 💰`
         })
@@ -87,7 +87,7 @@ const buildEmbed = async (member: GuildMember) => {
                 : `***TOP 10 sur ${ranked.length.toLocaleString('en')} membres***`,
             top,
             leaderboardIndex >= 10
-                ? `- **..${leaderboardIndex + 1}** **\`${authorHelper.getName({ safe: true })}\`** ${whiteArrowEmoji} **${ranked[leaderboardIndex].totalCoins.toLocaleString('en')}** 💰`
+                ? `- **..${leaderboardIndex + 1}** **\`${authorHelper.getName()}\`** ${whiteArrowEmoji} **${ranked[leaderboardIndex].totalCoins.toLocaleString('en')}** 💰`
                 : ''
         ].join('\n'),
         timestamp: Date.now()

@@ -43,28 +43,47 @@ export default new Event({
         const channelScopeBlacklist = await channelBlacklistService.findMany({ guildId, channelId });
 
         const now = Date.now();
+        const content = message.content.trim();
 
         let userSpamData = this.client.spamBuffer.get(userId);
 
         if (userSpamData && userSpamData.guildId === guildId) {
-            const elapsed = now - userSpamData.lastMessageAt;
+            const interval = now - userSpamData.lastMessageAt;
+            const lastInterval = userSpamData.lastInterval ?? interval;
 
-            if (elapsed < 750) {
-                userSpamData.messageCount++;
-            } else {
-                userSpamData.messageCount = 0;
+            let score = 0;
+
+            if (interval < 750) {
+                score += 1;
             }
 
+            if (userSpamData.lastContent === content && content.length > 1) {
+                score += 2;
+            }
+
+            if (Math.abs(interval - lastInterval) <= 75) {
+                score += 3;
+            }
+
+            if (score === 0) {
+                userSpamData.messageCount = 0;
+            } else {
+                userSpamData.messageCount += score;
+            }
+
+            userSpamData.lastInterval = interval;
             userSpamData.lastMessageAt = now;
+            userSpamData.lastContent = content;
+
             this.client.spamBuffer.set(userId, userSpamData);
         } else {
-            userSpamData = {
+            this.client.spamBuffer.set(userId, {
                 guildId,
                 lastMessageAt: now,
+                lastInterval: undefined,
+                lastContent: content,
                 messageCount: 0,
-            }
-
-            this.client.spamBuffer.set(userId, userSpamData);
+            });
         }
 
         const prefix = process.env.PREFIX;
@@ -274,7 +293,7 @@ export default new Event({
                     const minGain = settings.messageMinGain;
 
                     // Penalty
-                    const spamFactor = factor(userSpamData.messageCount, userSpamData.messageCount / 5);
+                    const spamFactor = factor(userSpamData?.messageCount, (userSpamData?.messageCount ?? 0) / 5);
 
                     // Bonus
                     const guildBoostFactor = factor(settings.boosterFactor, guildBoostElapsedProgress * settings.boosterFactor);
@@ -302,7 +321,7 @@ export default new Event({
                 const minGain = 75;
 
                 // Penalty
-                const spamFactor = factor(userSpamData.messageCount, userSpamData.messageCount / 5);
+                const spamFactor = factor(userSpamData?.messageCount, (userSpamData?.messageCount ?? 0) / 5);
 
                 // Bonus
                 const guildBoostFactor = factor(settings.boosterFactor, guildBoostElapsedProgress * settings.boosterFactor);
@@ -324,7 +343,9 @@ export default new Event({
             }
         }
 
-        if (guildQuestModule?.isActive && !channelScopeBlacklist.QUEST && userSpamData.messageCount === 0) {
+        console.log(userSpamData)
+
+        if (guildQuestModule?.isActive && !channelScopeBlacklist.QUEST && userSpamData?.messageCount === 0) {
             const quest = await handleMemberDailyQuestSync({
                 userId,
                 guildId

@@ -1,4 +1,4 @@
-import logger from '@/utils/logger.js'
+import logger from '@/utils/logger'
 
 export const jobsLogger = logger.use({
     prefix: (c) => c.white(`[${c.cyanBright(`JOBS`)}] <🕛>`)

@@ -42,10 +42,10 @@ const buildEmbed = async (member: GuildMember) => {
         .filter(r => topMembersMap.has(r.userId))
         .map((r, i) => {
             const memberObj = topMembersMap.get(r.userId)!
-            const helper = guildMemberHelperSync(memberObj)
+            const helper = guildMemberHelperSync(memberObj);
             const place = medals[i] ?? `**${i + 1}**`
             const isAuthor = r.userId === userId
-            const name = helper.getName({ safe: true })
+            const name = helper.getName();
 
             return `- ${place} ${isAuthor ? `**\`${name}\`**` : `\`${name}\``} ${whiteArrowEmoji} **${r.dailyStreak.toLocaleString('en')}** jours`
         })
@@ -72,7 +72,7 @@ const buildEmbed = async (member: GuildMember) => {
                 : `***TOP 10 sur ${rankers.length.toLocaleString('en')} membres***`,
             top,
             leaderboardIndex >= 10
-                ? `- **..${leaderboardIndex + 1}** **\`${memberHelper.getName({ safe: true })}\`** ${whiteArrowEmoji} **${rankers[leaderboardIndex].dailyStreak.toLocaleString('en')}** jours`
+                ? `- **..${leaderboardIndex + 1}** **\`${memberHelper.getName()}\`** ${whiteArrowEmoji} **${rankers[leaderboardIndex].dailyStreak.toLocaleString('en')}** jours`
                 : ''
         ].join('\n'),
         timestamp: Date.now()

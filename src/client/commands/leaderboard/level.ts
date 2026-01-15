@@ -34,7 +34,7 @@ const buildEmbed = async (member: GuildMember) => {
             const memberHelper = guildMemberHelperSync(memberObj);
             const place = medals[i] ?? `**${i + 1}**`;
             const isAuthor = r.userId === userId;
-            const name = memberHelper.getName({ safe: true })
+            const name = memberHelper.getName();
 
             return [
                 `- ${place} ${isAuthor ? `**\`${name}\`**` : `\`${name}\``}`,
