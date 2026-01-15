@@ -19,9 +19,13 @@ const buildEmbed = async (member: GuildMember) => {
                 gte: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString()
             }
         }
-    })).sort((a, b) => (b as any).lastAttendedAt - (a as any).lastAttendedAt);
+    })).sort((a, b) => {
+        if (b.dailyStreak !== a.dailyStreak) {
+            return b.dailyStreak - a.dailyStreak;
+        }
 
-    console.log(rankers)
+        return (b as any)?.lastAttendedAt - (a as any)?.lastAttendedAt;
+    });
 
     if (!rankers.length) {
         return EmbedUI.createMessage('Aucune donnée', { color: 'orange' })
