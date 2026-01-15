@@ -121,7 +121,7 @@ export default new Command({
         ]
     },
     messageCommand: {
-        style: 'flat'
+        style: 'flat',
     },
     access: {
         guild: {
