@@ -33,7 +33,8 @@ const handleCommand = async ({
 
     const payload = {
         title: 'Coin Flip',
-        thumbnail: { url: helper.getAvatarURL() }
+        thumbnail: { url: helper.getAvatarURL() },
+        footer: { text: `⚠️ Jouez de façon responsable - Les jeux d’argent peuvent entraîner des pertes` }
     }
 
     const balance = await memberService.getTotalGuildCoins({
@@ -58,6 +59,7 @@ const handleCommand = async ({
     if (amount < MIN_BET) {
         return EmbedUI.createErrorMessage({
             ...payload,
+            thumbnail: undefined,
             description: `La Mise minimale est de **${MIN_BET.toLocaleString('en')}** pièces de guilde`
         });
     }
@@ -65,6 +67,7 @@ const handleCommand = async ({
     if (amount > MAX_BET) {
         return EmbedUI.createErrorMessage({
             ...payload,
+                thumbnail: undefined,
             description: `La Mise maximale est de **${MAX_BET.toLocaleString('en')}** pièces de guilde`
         });
     }
@@ -72,6 +75,7 @@ const handleCommand = async ({
     if (balance.total < amount) {
         return EmbedUI.createErrorMessage({
             ...payload,
+            thumbnail: undefined,
             description: `Vous n'avez pas assez d'argent pour parier`
         });
     }
