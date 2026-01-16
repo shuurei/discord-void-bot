@@ -37,13 +37,21 @@ export default new Command({
 
         const [
             guildEcoModule,
-            guildLevelModule
+            guildLevelModule,
+            guildQuestModule,
         ] = await Promise.all([
             guildModuleService.findById({ moduleName: 'eco', guildId }),
-            guildModuleService.findById({ moduleName: 'level', guildId })
+            guildModuleService.findById({ moduleName: 'level', guildId }),
+            guildModuleService.findById({ moduleName: 'quest', guildId }),
         ]);
 
-        if (!(guildEcoModule?.isActive || guildLevelModule?.isActive)) {
+        const isVoiceQuestEnabeld = guildQuestModule?.settings?.isVoiceQuestEnabeld;
+        const isMessageQuestEnabled = guildQuestModule?.settings?.isMessageQuestEnabled;
+
+        if (
+            !(guildEcoModule?.isActive || guildLevelModule?.isActive)
+            || !(isVoiceQuestEnabeld || isMessageQuestEnabled)
+        ) {
             return await interaction.reply({
                 embeds: [
                     EmbedUI.createErrorMessage({
@@ -82,7 +90,7 @@ export default new Command({
 
         const fields = [];
 
-        if (quest.voice) {
+        if (isVoiceQuestEnabeld && quest.voice) {
             fields.push({
                 name: `🔊 Vocal`,
                 value: [
@@ -93,7 +101,7 @@ export default new Command({
             });
         }
 
-        if (quest.message) {
+        if (isMessageQuestEnabled && quest.message) {
             fields.push({
                 name: `💬 Messages`,
                 value: [
@@ -102,6 +110,22 @@ export default new Command({
                 ].join('\n'),
                 inline: true
             });
+        }
+
+        if (!isMessageQuestEnabled) {
+            quest.message = {} as any
+            quest.message!.rewards = {
+                activityXp: 0,
+                guildCoins: 0
+            }
+        }
+
+        if (!isVoiceQuestEnabeld) {
+            quest.voice = {} as any
+            quest.voice!.rewards = {
+                activityXp: 0,
+                guildCoins: 0
+            }
         }
 
         const guildCoinsReward = Math.floor((quest.message?.rewards.guildCoins ?? 0) + (quest.voice?.rewards.guildCoins ?? 0) * bonusMultiplier);

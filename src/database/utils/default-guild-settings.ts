@@ -85,7 +85,9 @@ export const defaultEventGuildModuleSettings = {
 }
 
 export const defaultQuestGuildModuleSettings = {
-    // 
+    isMessageQuestEnabled: true,
+    isVoiceQuestEnabeld: true,
+    useAntiSpam: true
 }
 
 export const defaultGuildModuleSettings = {

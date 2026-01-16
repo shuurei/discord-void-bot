@@ -3,6 +3,7 @@ enum BlacklistScope {
     ECONOMY
     COMMAND
     QUEST
+    MESSAGE
 }
 
 model ChannelBlacklist {
