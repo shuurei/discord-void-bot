@@ -9,8 +9,8 @@ import { applicationEmojiHelper, guildMemberHelper } from '@/helpers'
 const MIN_BET = 2_500;
 const MAX_BET = 750_000;
 
-const MIN_WIN = 0.3;
-const MAX_WIN = 0.5;
+const MIN_WIN = 0.25;
+const MAX_WIN = 0.4;
 
 const SOFT_CAP = 30_000;
 
