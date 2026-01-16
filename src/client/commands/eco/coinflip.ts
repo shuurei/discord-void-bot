@@ -5,21 +5,18 @@ import { memberService } from '@/database/services'
 import { EmbedUI } from '@/ui'
 
 import { applicationEmojiHelper, guildMemberHelper } from '@/helpers'
+import { randomNumber } from '@/utils'
 
 const MIN_BET = 2_500;
 const MAX_BET = 750_000;
 
-const MIN_WIN = 0.25;
+const MIN_WIN = 0.2;
 const MAX_WIN = 0.4;
 
-const SOFT_CAP = 30_000;
-
 const calculateWinChance = (amount: number) => {
-    if (amount <= SOFT_CAP) return MAX_WIN;
-
+    const SOFT_CAP = randomNumber(MIN_BET, MAX_WIN);
     const t = (amount - SOFT_CAP) / (MAX_BET - SOFT_CAP);
-    const clamped = Math.min(Math.max(t, 0), 1);
-
+    const clamped = Math.clamp(t, 0, 1);
     return MAX_WIN - clamped * (MAX_WIN - MIN_WIN);
 };
 
@@ -35,7 +32,7 @@ const handleCommand = async ({
     const helper = await guildMemberHelper(member, { fetchAll: true });
 
     const payload = {
-        title: 'Coin Flip 🎰',
+        title: 'Coin Flip',
         thumbnail: { url: helper.getAvatarURL() }
     }
 
