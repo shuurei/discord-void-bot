@@ -54,17 +54,24 @@ export default new Command({
         }
 
         const fieldType = typeof (defaultGuildModuleSettings as any)[moduleName][fieldName];
+        let fieldValue : any = value;
+
+        if (fieldType === 'number') {
+            fieldValue = parseInt(value);
+        } else if (fieldType === 'boolean') {
+            fieldValue = value === 'true';
+        }
 
         await guildModuleService.updateSettingField({
             guildId: message.guild.id,
             moduleName: moduleName as any,
-        }, fieldName, fieldType === 'number' ? +value : value);
+        }, fieldName, fieldValue);
 
         return await message.reply({
             embeds: [
                 EmbedUI.createSuccessMessage({
                     title: `🔍 Debug - Modification d'un champ module de serveur`,
-                    description: `Eh hop, j'ai défini **\`${fieldName}\`** du module **\`${moduleName}\`** avec la valeur **\`${value}\`** !`
+                    description: `Eh hop, j'ai défini **\`${fieldName}\`** du module **\`${moduleName}\`** avec la valeur **\`${fieldValue}\`** !`
                 })
             ]
         });
