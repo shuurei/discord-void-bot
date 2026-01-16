@@ -100,8 +100,6 @@ export default new Event({
                                 'every'
                             );
 
-                            console.log(moduleName, moduleFields)
-
                             if (!areFieldsEnabled) {
                                 return await replyAuthorizationRefused(
                                     `Une ou plusieurs options lié à un module requis sont désactivés par le gérant du serveur`,

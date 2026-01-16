@@ -211,7 +211,6 @@ class GuildModuleService {
         const module = await this.findOrCreate<ModuleName>({ guildId, moduleName });
 
         const results = names.map((key) => module.settings[key]);
-        console.log(results, module.settings)
         if (mode === 'every') return results.every(Boolean);
         return results.some(Boolean);
     }

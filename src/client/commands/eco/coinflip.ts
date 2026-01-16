@@ -46,6 +46,8 @@ const handleCommand = async ({
         amount = balance.total;
     }
 
+    amount = +amount;
+
     if (isNaN(amount)) {
         return EmbedUI.createErrorMessage({
             ...payload,
@@ -86,7 +88,7 @@ const handleCommand = async ({
             color: 'green',
             description: [
                 `Vous avez doublé votre mise ! 🔥`,
-                `> 💰 Gain ${greenArrowEmoji} **+${(amount).toLocaleString('en')}** pièce de serveur`,
+                `> 💰 Gain ${greenArrowEmoji} **+${amount.toLocaleString('en')}** pièce de serveur`,
                 `> :coin: Total d'argent ${whiteArrowEmoji} **${(balance.total + amount).toLocaleString('en')}** pièce de serveur`
             ].join('\n')
         });
