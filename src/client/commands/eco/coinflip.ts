@@ -6,14 +6,18 @@ import { EmbedUI } from '@/ui'
 
 import { applicationEmojiHelper, guildMemberHelper } from '@/helpers'
 
-const MIN_BET = 5_000;
-const MAX_BET = 100_000;
+const MIN_BET = 2_500;
+const MAX_BET = 750_000;
 
-const MIN_WIN = 0.1;
+const MIN_WIN = 0.3;
 const MAX_WIN = 0.5;
 
+const SOFT_CAP = 30_000;
+
 const calculateWinChance = (amount: number) => {
-    const t = (amount - MIN_BET) / (MAX_BET - MIN_BET);
+    if (amount <= SOFT_CAP) return MAX_WIN;
+
+    const t = (amount - SOFT_CAP) / (MAX_BET - SOFT_CAP);
     const clamped = Math.min(Math.max(t, 0), 1);
 
     return MAX_WIN - clamped * (MAX_WIN - MIN_WIN);
@@ -24,7 +28,7 @@ const handleCommand = async ({
     guildId,
     member
 }: {
-    amount: number;
+    amount: number | 'max';
     guildId: string;
     member: GuildMember;
 }) => {
@@ -33,6 +37,16 @@ const handleCommand = async ({
     const payload = {
         title: 'Coin Flip 🎰',
         thumbnail: { url: helper.getAvatarURL() }
+    }
+
+    const balance = await memberService.getTotalGuildCoins({
+        guildId,
+        userId: member.id
+    });
+
+
+    if (typeof amount === 'string' && amount === 'max') {
+        amount = balance.total;
     }
 
     if (isNaN(amount)) {
@@ -55,11 +69,6 @@ const handleCommand = async ({
             description: `La Mise maximale est de **${MAX_BET.toLocaleString('en')}** pièces de guilde`
         });
     }
-
-    const balance = await memberService.getTotalGuildCoins({
-        guildId,
-        userId: member.id
-    });
 
     if (balance.total < amount) {
         return EmbedUI.createErrorMessage({
@@ -109,13 +118,12 @@ export default new Command({
     slashCommand: {
         arguments: [
             {
-                type: 4,
+                type: 3,
                 name: 'amount',
-                description: 'Montant à parier',
+                description: 'The amount to wager or "max "',
                 description_localizations: {
-                    fr: 'Montant à parier'
+                    fr: 'Le montant à miser ou " max "'
                 },
-                min_value: MIN_BET,
                 required: true
             }
         ]
@@ -136,7 +144,7 @@ export default new Command({
         return await interaction.reply({
             embeds: [
                 await handleCommand({
-                    amount: interaction.options.getInteger('amount', true),
+                    amount: interaction.options.getString('amount', true) as 'max',
                     guildId: interaction.guild.id,
                     member: interaction.member
                 })
@@ -147,7 +155,7 @@ export default new Command({
         return await message.reply({
             embeds: [
                 await handleCommand({
-                    amount: Number(amount),
+                    amount: amount as 'max',
                     guildId: message.guild.id,
                     member: message.member!
                 })

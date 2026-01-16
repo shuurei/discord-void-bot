@@ -126,7 +126,7 @@ export default new Event({
             }
         };
 
-        if (!messageStartsWithPrefix) {
+        if (!(messageStartsWithPrefix || channelScopeBlacklist.MESSAGE)) {
             await memberService.incrementMessageCount({ userId, guildId });
         }
 
@@ -343,9 +343,11 @@ export default new Event({
             }
         }
 
-        console.log(userSpamData)
-
-        if (guildQuestModule?.isActive && !channelScopeBlacklist.QUEST && userSpamData?.messageCount === 0) {
+        if (
+            guildQuestModule?.isActive
+            && !channelScopeBlacklist.QUEST
+            && guildQuestModule.settings?.useAntiSpam ? (userSpamData?.messageCount ?? 0) <= 8 : true
+        ) {
             const quest = await handleMemberDailyQuestSync({
                 userId,
                 guildId
