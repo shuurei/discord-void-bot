@@ -398,8 +398,6 @@ export default new Command({
             }
 
             const refreshShop = async (interactionOrMessage: Interaction | Message = i) => {
-                await renderShop();
-
                 const view = await renderShop();
                 if (!view) return;
 
@@ -440,7 +438,7 @@ export default new Command({
 
                 if (i.customId === 'select_item') {
                     const roleId = i.values[0];
-                    const item = state.items.find((item) => item.roleId === roleId);
+                    const item = { ...(state.items.find((item) => item.roleId === roleId) ?? {}) };
 
                     if (!state.shop) {
                         return await i.reply({
@@ -454,7 +452,7 @@ export default new Command({
                         });
                     }
 
-                    if (!item) {
+                    if (!item || !item.roleId || !item.cost) {
                         await refreshShop();
                         return await i.followUp({
                             flags: MessageFlags.Ephemeral,

@@ -10,16 +10,6 @@ import { randomNumber } from '@/utils'
 const MIN_BET = 500;
 const MAX_BET = 50_000;
 
-const MIN_WIN = 0.2;
-const MAX_WIN = 0.4;
-
-const calculateWinChance = (amount: number) => {
-    const SOFT_CAP = randomNumber(MIN_BET, MAX_WIN);
-    const t = (amount - SOFT_CAP) / (MAX_BET - SOFT_CAP);
-    const clamped = Math.clamp(t, 0, 1);
-    return MAX_WIN - clamped * (MAX_WIN - MIN_WIN);
-};
-
 const handleCommand = async ({
     amount,
     guildId,
@@ -82,7 +72,7 @@ const handleCommand = async ({
 
     const { greenArrowEmoji, redArrowEmoji, whiteArrowEmoji } = applicationEmojiHelper();
 
-    const win = Math.random() < calculateWinChance(amount);
+    const win = Math.random() < randomNumber(MIN_BET, MAX_BET, true);
 
     if (win) {
         await memberService.addGuildCoins({ guildId, userId: member.id }, amount);
