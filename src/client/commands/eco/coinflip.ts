@@ -37,7 +37,7 @@ const handleCommand = async ({
 
 
     if (typeof amount === 'string' && amount === 'max') {
-        amount = balance.total;
+        amount = Math.max(balance.total, MAX_BET);
     }
 
     amount = +amount;
