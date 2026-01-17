@@ -10,6 +10,9 @@ import { randomNumber } from '@/utils'
 const MIN_BET = 500;
 const MAX_BET = 50_000;
 
+const MIN_WIN = 0.25;
+const MAX_WIN = 0.45;
+
 const handleCommand = async ({
     amount,
     guildId,
@@ -72,7 +75,7 @@ const handleCommand = async ({
 
     const { greenArrowEmoji, redArrowEmoji, whiteArrowEmoji } = applicationEmojiHelper();
 
-    const win = Math.random() < randomNumber(MIN_BET, MAX_BET, true);
+    const win = Math.random() < randomNumber(MIN_WIN, MAX_WIN, true);
 
     if (win) {
         await memberService.addGuildCoins({ guildId, userId: member.id }, amount);

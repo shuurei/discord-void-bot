@@ -1,7 +1,6 @@
 import { Command } from '@/structures/Command'
 
 import {
-    Embed,
     Interaction,
     InteractionReplyOptions,
     InteractionUpdateOptions,
