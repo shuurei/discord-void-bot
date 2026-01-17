@@ -37,7 +37,7 @@ const handleCommand = async ({
 
 
     if (typeof amount === 'string' && amount === 'max') {
-        amount = Math.max(balance.total, MAX_BET);
+        amount = Math.min(balance.total, MAX_BET);
     }
 
     amount = +amount;
@@ -53,7 +53,7 @@ const handleCommand = async ({
         return EmbedUI.createErrorMessage({
             ...payload,
             thumbnail: undefined,
-            description: `La Mise minimale est de **${MIN_BET.toLocaleString('en')}** pièces de guilde`
+            description: `La Mise minimale est de **${MIN_BET.toLocaleString('en')}** pièces de serveur`
         });
     }
 
@@ -61,7 +61,7 @@ const handleCommand = async ({
         return EmbedUI.createErrorMessage({
             ...payload,
                 thumbnail: undefined,
-            description: `La Mise maximale est de **${MAX_BET.toLocaleString('en')}** pièces de guilde`
+            description: `La Mise maximale est de **${MAX_BET.toLocaleString('en')}** pièces de serveur`
         });
     }
 
