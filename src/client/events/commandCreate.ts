@@ -121,7 +121,7 @@ export default new Event({
                 }
 
                 if (access.user) {
-                    if (access.user?.isDeveloper && isDeveloper) {
+                    if (access.user?.isDeveloper && !isDeveloper) {
                         return await replyAuthorizationRefused(`Autorisation insuffisante. Accès développeur requis.`);
                     }
 
