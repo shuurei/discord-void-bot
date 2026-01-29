@@ -160,7 +160,7 @@ const handleCommand = async ({
                 model: { value: tx.member }
             });
 
-            await memberService.removeGuildCoins.call(ctx, { guildId, userId: fromUserId }, amount);
+            await memberService.removeGuildCoinsWithVault.call(ctx, { guildId, userId: fromUserId }, amount);
             await memberService.addGuildCoins.call(ctx, { guildId, userId: toUserId }, amount);
         });
 
