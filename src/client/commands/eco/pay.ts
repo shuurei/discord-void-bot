@@ -167,7 +167,7 @@ const handleCommand = async ({
         const files = [
             {
                 attachment: await createNotifCard({
-                    text: `[Virement effectué.]`,
+                    text: `[Virement de ${amount} pièces réussi.]`,
                     theme: 'green',
                 }),
                 name: 'success.png'
