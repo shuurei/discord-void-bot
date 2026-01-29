@@ -22,6 +22,11 @@ const themes = {
         border: '#cf1a1a',
         rects: ['#e59292', '#ff6c6c']
     },
+    orange: {
+        background: ['#ffb36c', '#cf871a'],
+        border: '#cf7b1a',
+        rects: ['#e5c892', '#ffbf6c']
+    },
     pink: {
         background: ['#ff6cf8', '#cf1ab7'],
         border: '#cf1ab7',

@@ -37,7 +37,7 @@ const handleCommand = async ({
         return [
             {
                 attachment: await createNotifCard({
-                    text: "[Chiffre invalide]",
+                    text: "[Chiffre invalide.]",
                     theme: 'red'
                 }),
                 name: 'failure.png'
@@ -132,7 +132,7 @@ export default new Command({
             {
                 type: 3,
                 name: 'amount',
-                description: 'The amount to wager or "max "',
+                description: 'The amount to wager or " max "',
                 description_localizations: {
                     fr: 'Le montant à miser ou " max "'
                 },

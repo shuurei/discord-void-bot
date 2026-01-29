@@ -170,9 +170,13 @@ export class CommandManager {
                 .sort((a: any, b: any) => {
                     if (a.required && !b.required) return -1;
                     if (!a.required && b.required) return 1;
+                    
+                    if (!([1, 2].includes(a.type) && [1, 2].includes(b.type))) {                        
+                        return 0;
+                    }
 
                     return a.name.localeCompare(b.name);
-                });
+                })
         };
 
         logger.topBorderBox('Sync Slash Commands ⏳');

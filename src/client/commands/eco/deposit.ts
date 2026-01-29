@@ -86,9 +86,9 @@ export default new Command({
             {
                 type: 3,
                 name: 'amount',
-                description: 'The amount to deposit or "all"',
+                description: 'The amount to deposit or " all "',
                 description_localizations: {
-                    fr: 'Le montant à déposer ou " all"'
+                    fr: 'Le montant à déposer ou " all "'
                 },
                 required: true,
             }
