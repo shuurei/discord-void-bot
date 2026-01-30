@@ -1,7 +1,6 @@
 import { Command } from '@/structures'
 import { ApplicationCommandOptionType } from 'discord.js'
 
-import { mainGuildConfig } from '@/client/config'
 import { waifuAPI } from '@/api'
 import { EmbedUI } from '@/ui/EmbedUI'
 
@@ -18,23 +17,16 @@ export default new Command({
             {
                 type: ApplicationCommandOptionType.User,
                 name: 'user',
-                description: 'user to blacklist',
+                description: 'The user you want to hug',
                 name_localizations: {
                     fr: 'utilisateur'
                 },
                 description_localizations: {
-                    fr: 'utilisateur à mettre sur liste noir'
+                    fr: 'La personne à qui faire un câlin'
                 },
                 required: true
             },
         ]
-    },
-    access: {
-        guild: {
-            authorizedIds: [
-                mainGuildConfig.id
-            ]
-        }
     },
     async onInteraction(interaction) {
         const hasUser = interaction.options.getUser('user');
