@@ -2,7 +2,9 @@ import {
     ButtonInteraction,
     ChatInputCommandInteraction,
     ClientEvents,
+    Guild,
     Message,
+    User,
 } from 'discord.js'
 
 import { Command } from './Command'
@@ -15,8 +17,8 @@ export interface CustomClientEvents extends ClientEvents {
     commandCreate: [Command, Message | ChatInputCommandInteraction, string[] | null[]],
     databaseDisconnected: [...args: any],
     databaseReady: [...args: any],
-    blacklistCreate: [BlacklistModel],
-    blacklistAccepted: [BlacklistModel],
+    blacklistCreate: [BlacklistModel, Guild, User, User],
+    blacklistTreated: [BlacklistModel],
 };
 
 export interface EventRunOptions<Event extends keyof CustomClientEvents> {

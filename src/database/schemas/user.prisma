@@ -2,10 +2,11 @@ model User {
     id    String @id
     flags Int    @default(0)
 
-    guilds      Member[]
+    guilds Member[]
 
-    blacklister Blacklist[] @relation("Mod")
-    blacklisted Blacklist[] @relation("User")
+    blacklistsAsTarget  Blacklist[] @relation("Target")
+    blacklistsAsAuthor  Blacklist[] @relation("Author")
+    blacklistsAsCleaner Blacklist[] @relation("Cleaner")
 
     tagAssignedAt DateTime?
     createdAt     DateTime  @default(now())

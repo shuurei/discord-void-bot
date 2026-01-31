@@ -1,0 +1,14 @@
+model BlacklistDerogation {
+    userId    String
+    blacklist Blacklist @relation(fields: [userId], references: [targetId], onDelete: Cascade)
+
+    guildId String
+    guild   Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+    authorized Boolean
+
+    decidedAt DateTime @default(now())
+
+    @@id([userId, guildId])
+    @@map("blacklist_derogation")
+}

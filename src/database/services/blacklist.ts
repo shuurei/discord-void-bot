@@ -1,56 +1,75 @@
 import db from '@/database/db'
 import { BlacklistStatus } from '@/database/core/enums'
-
-interface BlacklistMutationData {
-    modId: string;
-}
+import { BlacklistCreateManyInput, BlacklistUpdateInput, BlacklistUpdateManyMutationInput } from '../core/models'
 
 class BlacklistService {
     constructor(
         public model: typeof db.blacklist
     ) {}
 
-    private _buildUserJoin(userId: string) {
+    // -- Utils -- //
+    private _buildDataJoin(dataId: string) {
         return {
             connectOrCreate: {
-                where: { id: userId },
-                create: { id: userId }
+                where: { id: dataId },
+                create: { id: dataId }
             }
         };
     }
 
-    async findById(userId?: string) {
-        return await this.model.findUnique({ where: { userId } });
+    // -- CRUD -- //
+    async findById(targetId?: string) {
+        return await this.model.findUnique({ where: { targetId } });
     }
 
-    async add(data: { userId: string, reason?: string } & BlacklistMutationData) {
-        const { userId, modId, ...props } = data;
+    async findByThreadId(threadId?: string) {
+        return await this.model.findUnique({ where: { threadId } });
+    }
+
+    async add(data: BlacklistCreateManyInput) {
+        const {
+            targetId,
+            authorId,
+            cleanerId,
+            guildId,
+            ...props
+        } = data;
 
         return await this.model.upsert({
-            where: { userId },
+            where: { targetId },
+            update: {},
             create: {
                 ...props,
-                user: this._buildUserJoin(userId),
-                mod: this._buildUserJoin(modId),
+                guild: this._buildDataJoin(guildId),
+                target: this._buildDataJoin(targetId),
+                author: this._buildDataJoin(authorId),
+                cleaner: cleanerId ? this._buildDataJoin(cleanerId) : {},
             },
-            update: {},
-            include: {
-                mod: true,
-                user: true,
+        });
+    }
+
+    async update(targetId: string, data: { cleanerId?: string } & Omit<BlacklistUpdateInput, 'target' | 'author' | 'cleaner'>) {
+        const { cleanerId, ...props } = data;
+
+        return await this.model.update({
+            where: { targetId },
+            data: {
+                ...props,
+                cleaner: cleanerId ? this._buildDataJoin(cleanerId) : {},
             }
         });
     }
 
-    async updateState(userId: string, status: BlacklistStatus) {
+    async updateState(targetId: string, status: BlacklistStatus) {
         return await this.model.update({
-            where: { userId },
+            where: { targetId },
             data: { status }
         });
     }
 
-    async remove(userId: string) {
+    async removeByThreadId(threadId: string) {
         return await this.model.delete({
-            where: { userId }
+            where: { threadId }
         });
     }
 }

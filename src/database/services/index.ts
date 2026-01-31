@@ -5,7 +5,7 @@ export * from './guild-level-reward'
 export * from './guild-module'
 // Blacklist
 export * from './blacklist'
-export * from './blacklist-guild'
+export * from './blacklist-derogation'
 // Member
 export * from './member'
 export * from './member-vault'

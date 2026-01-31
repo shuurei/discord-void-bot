@@ -1,57 +1,64 @@
 import { Event } from '@/structures'
-import { blacklistGuildService, blacklistService } from '@/database/services'
+import { MessageFlags } from 'discord.js'
 
-import { createActionRow, createButton } from '@/ui/components/common'
-import { EmbedUI } from '@/ui/EmbedUI'
+import { blacklistDerogationService, blacklistService } from '@/database/services'
+import { BlacklistStatus } from '@/database/core/enums'
+
+import { ContainerUI, EmbedUI } from '@/ui'
+import {
+    createActionRow,
+    createButton,
+    createMediaGallery,
+    createSeparator,
+    createTextDisplay
+} from '@/ui/components/common'
+import { createNotifCard } from '@/ui/assets/cards/notifCard'
 
 export default new Event({
     name: 'guildMemberAdd',
     async run({ events: [member] }) {
         const guild = member.guild;
+        const guildId = guild.id;
+        const userId = member.id;
 
         if (member.bannable && guild.safetyAlertsChannel) {
-            const blacklist = await blacklistService.findById(member.id);
-            if (blacklist) {
-                const guildBlacklist = await blacklistGuildService.findById({
-                    guildId: guild.id,
-                    userId: member.id
-                });
+            const blacklist = await blacklistService.findById(userId);
 
-                if (!guildBlacklist?.accepted) {
+            if (blacklist?.status === BlacklistStatus.TREATED) {
+                const derogation = await blacklistDerogationService.findById({ userId, guildId });
+
+                if (!derogation?.authorized) {
                     await member.ban({
                         reason: blacklist.reason ?? 'Aucune raisons spécifiée'
                     });
 
                     return await guild.safetyAlertsChannel.send({
-                        content: `Oulah, il y a un membre qui a tenté de rejoindre mais il est sur mes listes noir du coup je l'ai banni, veux-tu que je l'autorise quand-même ?`,
-                        embeds: [
-                            EmbedUI.createMessage({
-                                color: 'orange',
-                                title: '🕵️ info sur le membre blacklisté',
-                                fields: [
-                                    {
-                                        name: '👤 Utilisateur',
-                                        value: `<@${member.id}> (\`${member.id}\`)`,
-                                        inline: true
-                                    },
-                                    {
-                                        name: '📄 Raison',
-                                        value: blacklist.reason ?? 'Aucune raison spécifiée',
-                                        inline: false
-                                    }
-                                ],
-                                timestamp: new Date().toISOString()
-                            })
-                        ],
+                        flags: MessageFlags.IsComponentsV2,
+                        files: [{
+                            attachment: await createNotifCard({
+                                text: `[Présence non autorisée détectée.]`,
+                                theme: 'orange'
+                            }),
+                            name: 'info.png'
+                        }],
                         components: [
-                            createActionRow([
-                                createButton('Autoriser', {
-                                    color: 'green',
-                                    customId: `bl_authorize_${member.id}`
-                                }),
-                            ])
+                            createMediaGallery([{ media: { url: 'attachment://info.png' } }]),
+                            ContainerUI.create({
+                                color: 'orange',
+                                components: [
+                                    createTextDisplay([
+                                        '### **Raison**',
+                                        `> ${blacklist.reason ?? 'Aucune raison spécifiée'}`
+                                    ].join('\n')),
+                                    createSeparator(),
+                                    createActionRow([
+                                        createButton('Autoriser', { color: 'green', customId: `authorize_derogation.${userId}` }),
+                                        createButton('Refuser', { color: 'red', customId: `refused_derogation.${userId}` })
+                                    ])
+                                ]
+                            })
                         ]
-                    })
+                    });
                 }
             }
         }
@@ -59,7 +66,7 @@ export default new Event({
         if (process.env.ENV === 'DEV') return;
 
         if (this.client.mainGuild.id === guild.id) {
-            await this.client.mainGuild.welcomeChannel.send({
+            return await this.client.mainGuild.welcomeChannel.send({
                 embeds: [
                     EmbedUI.createMessage({
                         color: 'indigo',
@@ -77,7 +84,7 @@ export default new Event({
                         image: {
                             url: 'https://i.pinimg.com/originals/cd/0a/c5/cd0ac53c65a93a2ccfabb720e1dcb0fe.gif'
                         },
-                        timestamp: new Date().toISOString()
+                        timestamp: Date.now()
                     })
                 ]
             }).then(async (msg) => await msg.react('🌠'))

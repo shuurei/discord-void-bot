@@ -17,7 +17,8 @@ model Guild {
     shops            Shop[]
     items            ShopItem[]
     modules          GuildModule[]
-    blacklists       BlacklistGuild[]
+    blacklists       Blacklist[]
+    derogations      BlacklistDerogation[]
 
     @@map("guild")
 }

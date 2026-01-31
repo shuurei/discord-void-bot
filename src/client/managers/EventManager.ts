@@ -29,11 +29,15 @@ export class EventManager {
             const listenerType = mod.once ? 'once' : 'on';
 
             this.client[listenerType](mod.name, async (...args) => {
-                const newThis = Object.assign(mod, {
-                    client: this.client
-                });
-
-                return await mod.run.call(newThis, { events: args });
+                try {
+                    const newThis = Object.assign(mod, {
+                        client: this.client
+                    });
+    
+                    return await mod.run.call(newThis, { events: args });
+                } catch (ex) {
+                    logger.error(ex);
+                }
             });
 
             logger.borderBox((c) => `⚡ ${c.yellowBright('»')} ${c.cyanBright(mod.name)}`)

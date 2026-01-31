@@ -2,12 +2,16 @@ import { Command } from '@/structures/Command'
 import { ApplicationCommandOptionType } from 'discord.js'
 
 import { blacklistService } from '@/database/services'
-import { EmbedUI } from '@/ui/EmbedUI'
+import { createNotifCard } from '@/ui/assets/cards/notifCard'
 
 export default new Command({
+    description: `📝 Submit a blacklist request`,
+    descriptionLocalizations: {
+        fr: `📝 Soumettre une demande de blacklist`
+    },
     access: {
         user: {
-            isStaff: true
+            requiredPermissions: ['BanMembers']
         }
     },
     slashCommand: {
@@ -20,7 +24,7 @@ export default new Command({
                     fr: 'utilisateur'
                 },
                 description_localizations: {
-                    fr: 'utilisateur à mettre sur liste noir'
+                    fr: 'utilisateur à mettre sur liste noire'
                 },
                 required: true
             },
@@ -32,70 +36,59 @@ export default new Command({
                     fr: 'raison'
                 },
                 description_localizations: {
-                    fr: 'raison de la mise en liste noir'
+                    fr: 'raison de la mise en liste noire'
                 }
-            }
+            },
+            {
+                type: ApplicationCommandOptionType.String,
+                name: 'context',
+                description: 'context of blacklist',
+                name_localizations: {
+                    fr: 'contexte'
+                },
+                description_localizations: {
+                    fr: 'contexte de la mise en liste noire'
+                }
+            },
         ]
     },
     async onInteraction(interaction) {
-        const user = interaction.options.getUser('user', true)
+        const target = interaction.options.getUser('user', true)
 
-        const formatTimestamp = (date: Date) => Math.floor(date.getTime() / 1000);
-
-        let blacklist = await blacklistService.findById(user.id);
+        let blacklist = await blacklistService.findById(target.id);
         if (blacklist) {
             return await interaction.reply({
-                embeds: [
-                    EmbedUI.createMessage({
-                        color: 'red',
-                        title: "Ajout d'un utilisateur sur blacklist",
-                        description: `L'utilisateur \`${user.id}\` est déjà sur la blacklist, depuis <t:${formatTimestamp(blacklist.blacklistAt)}>`
+                files: [{
+                    attachment: await createNotifCard({
+                        text: `[Utilisateur déjà présent sur la liste noire.]`,
+                        theme: 'red'
                     })
-                ]
+                }]
             });
         }
 
-        const mod = interaction.user;
-        const reason = interaction.options.getString('reason') ?? 'Aucune raison spécifiée';
+        const author = interaction.user;
+        const reason = interaction.options.getString('reason');
+        const context = interaction.options.getString('context');
 
         blacklist = await blacklistService.add({
-            modId: mod.id,
-            userId: user.id,
+            targetId: target.id,
+            authorId: author.id,
+            guildId: interaction.guild.id,
             reason,
+            context
         });
 
-        this.client.emit('blacklistCreate', blacklist);
+        this.client.emit('blacklistCreate', blacklist, interaction.guild, target, author);
 
         return await interaction.reply({
-            content: "Deux petites secondes.. Et voilà, j'ai transmis le signalement !",
-            embeds: [
-                EmbedUI.createMessage({
-                    color: 'green',
-                    title: "🕵️ Détails de la blacklist",
-                    fields: [
-                        {
-                            name: "👤 Utilisateur",
-                            value: `- <@${blacklist.userId}>\n- \`${user.id}\``,
-                            inline: true
-                        },
-                        {
-                            name: "🛡️ Modérateur",
-                            value: `- <@${blacklist.modId}>\n- \`${mod.id}\``,
-                            inline: true
-                        },
-                        {
-                            name: "📖 Raison",
-                            value: reason,
-                            inline: false
-                        }
-                    ],
-                    footer: {
-                        text: mod.username,
-                        iconURL: mod.avatarURL() ?? undefined,
-                    },
-                    timestamp: new Date().toISOString()
-                }),
-            ]
+            files: [{
+                attachment: await createNotifCard({
+                    text: `[Requête enregistrée. Traitement par un nettoyeur autorisé.]`,
+                    theme: 'green',
+                    fontSize: 22
+                })
+            }]
         });
     }
 })

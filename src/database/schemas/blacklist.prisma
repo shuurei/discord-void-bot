@@ -1,19 +1,31 @@
 enum BlacklistStatus {
+    CLOSED
     PENDING
-    ACCEPTED
+    CLAIMED
+    TREATED
 }
 
 model Blacklist {
-    userId String @id
-    user   User   @relation("User", fields: [userId], references: [id], onDelete: Cascade)
+    threadId String? @unique
 
-    modId String
-    mod   User   @relation("Mod", fields: [modId], references: [id], onDelete: Cascade)
+    context String?
+    reason  String?
+
+    targetId String @id
+    target   User   @relation("Target", fields: [targetId], references: [id], onDelete: Cascade)
+
+    authorId String
+    author   User   @relation("Author", fields: [authorId], references: [id], onDelete: Cascade)
+
+    cleanerId String?
+    cleaner   User?   @relation("Cleaner", fields: [cleanerId], references: [id], onDelete: Cascade)
+
+    guildId String
+    guild   Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade)
 
     status BlacklistStatus @default(PENDING)
-    reason String?
 
-    guilds BlacklistGuild[]
+    blacklistedAt DateTime @default(now())
 
-    blacklistAt DateTime @default(now())
+    derogations BlacklistDerogation[]
 }

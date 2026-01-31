@@ -98,7 +98,7 @@ const buildContainer = async (member: GuildMember) => {
     if (
         member.user.bot ||
         userDatabase?.flags?.any([
-            PrismaUserFlags.STAFF,
+            PrismaUserFlags.CLEANER,
             PrismaUserFlags.BETA
         ])
     ) {
@@ -108,9 +108,9 @@ const buildContainer = async (member: GuildMember) => {
             components.push(
                 createTextDisplay('-# *Cet utilisateur est un robot*')
             );
-        } else if (userDatabase?.flags.has(PrismaUserFlags.STAFF)) {
+        } else if (userDatabase?.flags.has(PrismaUserFlags.CLEANER)) {
             components.push(
-                createTextDisplay('-# *Cet utilisateur est un staff du bot*')
+                createTextDisplay('-# *Cet utilisateur est un nettoyeur*')
             );
         } else if (userDatabase?.flags.has(PrismaUserFlags.BETA)) {
             components.push(
